@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 
+import 'announcement.dart';
+
 class BottomBar extends StatefulWidget {
   const BottomBar({super.key});
 
@@ -13,7 +15,7 @@ class _BottomBarState extends State<BottomBar> {
   int _selectedindex = 0;
   static final List<Widget> _widgetOptions = <Widget>[
     const Text("Home"),
-    const Text("Announcements"),
+    AnnouncementPage(),
     const Text("Activities")
   ];
   void _onitemTapped(int index) {
@@ -38,6 +40,7 @@ class _BottomBarState extends State<BottomBar> {
           showSelectedLabels: false,
           showUnselectedLabels: false,
           selectedItemColor: Colors.red,
+          type: BottomNavigationBarType.fixed,
           items: const [
             BottomNavigationBarItem(
                 icon: Icon(FluentIcons.home_16_regular),
