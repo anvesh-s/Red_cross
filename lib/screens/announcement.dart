@@ -25,16 +25,12 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
             _buildAnnouncementSection(
               'Main Branch Announcement',
               mainBranchAnnouncements,
-              () => _addAnnouncementForSection(true),
-              () => _addImageAnnouncement(true),
-              () => _addVideoAnnouncement(true),
+              isMainBranch: true,
             ),
             _buildAnnouncementSection(
               'Local Branch Announcement',
               localBranchAnnouncements,
-              () => _addAnnouncementForSection(false),
-              () => _addImageAnnouncement(false),
-              () => _addVideoAnnouncement(false),
+              isMainBranch: false,
             ),
           ],
         ),
@@ -44,11 +40,9 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
 
   Widget _buildAnnouncementSection(
     String sectionTitle,
-    List<Announcement> announcements,
-    VoidCallback onAddText,
-    VoidCallback onAddImage,
-    VoidCallback onAddVideo,
-  ) {
+    List<Announcement> announcements, {
+    required bool isMainBranch,
+  }) {
     return Container(
       padding: EdgeInsets.all(16),
       child: Column(
@@ -65,16 +59,8 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
               ),
               SizedBox(width: 8),
               IconButton(
-                onPressed: onAddText,
+                onPressed: () => _addAnnouncement(isMainBranch),
                 icon: Icon(Icons.add),
-              ),
-              IconButton(
-                onPressed: onAddImage,
-                icon: Icon(Icons.add_photo_alternate),
-              ),
-              IconButton(
-                onPressed: onAddVideo,
-                icon: Icon(Icons.video_call),
               ),
             ],
           ),
@@ -86,6 +72,12 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                       margin: EdgeInsets.symmetric(vertical: 8),
                       child: Column(
                         children: [
+                          if (announcement.text != null) ...[
+                            ListTile(
+                              leading: Icon(announcement.icon),
+                              title: Text(announcement.text!),
+                            ),
+                          ],
                           if (announcement.imageFile != null)
                             Image.file(
                               announcement.imageFile!,
@@ -93,10 +85,6 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                               width: double.infinity,
                               height: 200,
                             ),
-                          ListTile(
-                            leading: Icon(announcement.icon),
-                            title: Text(''),
-                          ),
                         ],
                       ),
                     );
@@ -108,7 +96,7 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
     );
   }
 
-  void _addAnnouncementForSection(bool isMainBranch) {
+  void _addAnnouncement(bool isMainBranch) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -116,6 +104,49 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
 
         return AlertDialog(
           title: Text('Add Announcement'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                ListTile(
+                  leading: Icon(FluentIcons.note_20_filled),
+                  title: Text('Text Announcement'),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _addTextAnnouncement(isMainBranch);
+                  },
+                ),
+                ListTile(
+                  leading: Icon(FluentIcons.image_24_regular),
+                  title: Text('Image Announcement'),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _addImageAnnouncement(isMainBranch);
+                  },
+                ),
+                ListTile(
+                  leading: Icon(FluentIcons.video_clip_24_regular),
+                  title: Text('Video Announcement'),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _addVideoAnnouncement(isMainBranch);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _addTextAnnouncement(bool isMainBranch) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String text = '';
+
+        return AlertDialog(
+          title: Text('Add Text Announcement'),
           content: TextField(
             onChanged: (value) {
               text = value;
@@ -127,6 +158,7 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
                 setState(() {
                   final newAnnouncement = Announcement(
                     icon: FluentIcons.note_20_filled,
+                    text: text,
                   );
 
                   if (isMainBranch) {
@@ -166,17 +198,19 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
   }
 
   void _addVideoAnnouncement(bool isMainBranch) {
-    // how to video no clue will learn
+    // no video for now AAAAHHHHHHHHH
     print('Add video announcement');
   }
 }
 
 class Announcement {
   final IconData icon;
+  final String? text;
   final File? imageFile;
 
   Announcement({
     required this.icon,
+    this.text,
     this.imageFile,
   });
 }
