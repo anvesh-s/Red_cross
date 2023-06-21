@@ -34,6 +34,11 @@ class _ActivityPageState extends State<ActivityPage> {
   }
 
   Widget _buildActivitySection(Activity activity) {
+    final List<Content> imageContents =
+        activity.contents.whereType<ImageContent>().toList();
+    final List<Content> nonImageContents =
+        activity.contents.where((content) => content is! ImageContent).toList();
+
     return Container(
       padding: EdgeInsets.all(16),
       child: Column(
@@ -56,35 +61,52 @@ class _ActivityPageState extends State<ActivityPage> {
             ],
           ),
           SizedBox(height: 8),
-          activity.contents.isNotEmpty
-              ? Column(
-                  children: [
-                    _buildContentItem(activity, activity.currentContentIndex),
-                    if (activity.contents.length > 1)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          IconButton(
-                            onPressed: () => _toggleContent(activity, -1),
-                            icon: Icon(Icons.arrow_back),
-                          ),
-                          IconButton(
-                            onPressed: () => _toggleContent(activity, 1),
-                            icon: Icon(Icons.arrow_forward),
-                          ),
-                        ],
-                      ),
-                  ],
-                )
-              : Text('No content'),
+          Stack(
+            children: [
+              if (imageContents.isNotEmpty) _buildImageContentItem(activity),
+            ],
+          ),
+          if (imageContents.length > 1)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  onPressed: () => _toggleContent(activity, -1),
+                  icon: Icon(Icons.arrow_back),
+                ),
+                IconButton(
+                  onPressed: () => _toggleContent(activity, 1),
+                  icon: Icon(Icons.arrow_forward),
+                ),
+              ],
+            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (var content in nonImageContents) _buildContentItem(content),
+            ],
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildContentItem(Activity activity, int index) {
-    final content = activity.contents[index];
+  Widget _buildImageContentItem(Activity activity) {
+    final currentIndex = activity.currentContentIndex ?? 0;
+    final currentContent = activity.contents[currentIndex] as ImageContent;
 
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 8),
+      child: Image(
+        image: FileImage(currentContent.imageFile),
+        fit: BoxFit.contain,
+        width: double.infinity,
+        height: 200,
+      ),
+    );
+  }
+
+  Widget _buildContentItem(Content content) {
     if (content is TextContent) {
       return ListTile(
         leading: Icon(content.icon),
@@ -115,8 +137,8 @@ class _ActivityPageState extends State<ActivityPage> {
 
   void _toggleContent(Activity activity, int direction) {
     final currentContentIndex = activity.currentContentIndex ?? 0;
-
     int nextIndex = currentContentIndex + direction;
+
     if (nextIndex < 0) {
       nextIndex = activity.contents.length - 1;
     } else if (nextIndex >= activity.contents.length) {
@@ -223,7 +245,9 @@ class _ActivityPageState extends State<ActivityPage> {
                   activity.contents.add(
                     TextContent(icon: FluentIcons.note_20_filled, text: text),
                   );
-                  activity.currentContentIndex = activity.contents.length - 1;
+                  if (activity.contents.length == 1) {
+                    activity.currentContentIndex = 0;
+                  }
                 });
                 Navigator.of(context).pop();
               },
@@ -244,7 +268,9 @@ class _ActivityPageState extends State<ActivityPage> {
         final imageFile = File(pickedFile.path);
         final imageContent = ImageContent(imageFile: imageFile);
         activity.contents.add(imageContent);
-        activity.currentContentIndex = activity.contents.length - 1;
+        if (activity.contents.length == 1) {
+          activity.currentContentIndex = 0;
+        }
       });
     }
   }
@@ -262,6 +288,9 @@ class _ActivityPageState extends State<ActivityPage> {
         activity.contents.add(
           VideoContent(videoController: videoController),
         );
+        if (activity.contents.length == 1) {
+          activity.currentContentIndex = 0;
+        }
       });
     }
   }
