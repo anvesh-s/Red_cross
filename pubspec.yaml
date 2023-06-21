@@ -37,6 +37,10 @@ dependencies:
   cupertino_icons: ^1.0.2
   fluentui_system_icons: ^1.1.203
   image_picker: ^0.8.9
+  video_player: ^2.6.1
+  multi_image_picker: ^4.8.01
+  uuid: ^3.0.7
+  path_provider: ^2.0.15
 
 dev_dependencies:
   flutter_test:

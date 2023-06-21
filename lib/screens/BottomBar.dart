@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluentui_system_icons/fluentui_system_icons.dart';
+import 'package:red_cross/screens/Activity.dart';
 
 import 'announcement.dart';
 
@@ -16,7 +17,7 @@ class _BottomBarState extends State<BottomBar> {
   static final List<Widget> _widgetOptions = <Widget>[
     const Text("Home"),
     AnnouncementPage(),
-    const Text("Activities")
+    ActivityPage(),
   ];
   void _onitemTapped(int index) {
     setState(() {
