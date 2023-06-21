@@ -48,49 +48,61 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Text(
-                sectionTitle,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                Text(
+                  sectionTitle,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              SizedBox(width: 8),
-              IconButton(
-                onPressed: () => _addAnnouncement(isMainBranch),
-                icon: Icon(Icons.add),
-              ),
-            ],
+                SizedBox(width: 8),
+                IconButton(
+                  onPressed: () => _addAnnouncement(isMainBranch),
+                  icon: Icon(Icons.add),
+                ),
+              ],
+            ),
           ),
           SizedBox(height: 8),
-          announcements.isNotEmpty
-              ? Column(
-                  children: announcements.map((announcement) {
-                    return Card(
-                      margin: EdgeInsets.symmetric(vertical: 8),
-                      child: Column(
-                        children: [
-                          if (announcement.text != null) ...[
-                            ListTile(
-                              leading: Icon(announcement.icon),
-                              title: Text(announcement.text!),
-                            ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                if (announcements.isNotEmpty)
+                  Row(
+                    children: announcements.map((announcement) {
+                      return Card(
+                        margin:
+                            EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                        child: Column(
+                          children: [
+                            if (announcement.text != null) ...[
+                              ListTile(
+                                leading: Icon(announcement.icon),
+                                title: Text(announcement.text!),
+                              ),
+                            ],
+                            if (announcement.imageFile != null)
+                              Image.file(
+                                announcement.imageFile!,
+                                fit: BoxFit.contain,
+                                width: 200,
+                                height: 200,
+                              ),
                           ],
-                          if (announcement.imageFile != null)
-                            Image.file(
-                              announcement.imageFile!,
-                              fit: BoxFit.contain,
-                              width: double.infinity,
-                              height: 200,
-                            ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                )
-              : Text('No announcement'),
+                        ),
+                      );
+                    }).toList(),
+                  )
+                else
+                  Text('No announcement'),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -198,7 +210,7 @@ class _AnnouncementPageState extends State<AnnouncementPage> {
   }
 
   void _addVideoAnnouncement(bool isMainBranch) {
-    // no video for now AAAAHHHHHHHHH
+    // no video for now AAAAHHHHHHHHHannouncemnt tyoe button
     print('Add video announcement');
   }
 }
